@@ -6,10 +6,10 @@ import plotly.express as px
 import streamlit as st
 from datetime import datetime
 
-aggregated_metrics_by_country_and_subs = '/Aggregated_Metrics_By_Country_And_Subscriber_Status.csv'
-aggregated_metrics_by_video = '/Aggregated_Metrics_By_Video.csv'
-all_comments_final = '/All_Comments_Final.csv'
-video_performance_over_time = '/Video_Performance_Over_Time.csv'
+aggregated_metrics_by_country_and_subs = 'Aggregated_Metrics_By_Country_And_Subscriber_Status.csv'
+aggregated_metrics_by_video = 'Aggregated_Metrics_By_Video.csv'
+all_comments_final = 'All_Comments_Final.csv'
+video_performance_over_time = 'Video_Performance_Over_Time.csv'
 
 def load_data(file_path):
   return pd.read_csv(file_path)
@@ -38,10 +38,10 @@ def audience_simple(country):
     else:
         return 'Other'
     
-am_ctsubs = load_data(f'./data{aggregated_metrics_by_country_and_subs}')
-am_vid = load_data(f'./data{aggregated_metrics_by_video}')
-acom_f = load_data(f'./data{all_comments_final}')
-vid_pot = load_data(f'./data{video_performance_over_time}')
+am_ctsubs = load_data(aggregated_metrics_by_country_and_subs)
+am_vid = load_data(aggregated_metrics_by_video)
+acom_f = load_data(all_comments_final)
+vid_pot = load_data(video_performance_over_time)
 
 # ===== DATA PREPROCESSING =====
 # === Aggregated Metrics by Video Dataset ===
@@ -107,19 +107,19 @@ df_time_diff_yr = vid_pot_diff[vid_pot_diff['Video publish time'] >= date_12mo]
 
 
 # ===== GET DAILY VIEW DATA (First 30), MEDIAN, AND PERCENTILES =====
-views_days = pd.pivot_table(df_time_diff_yr, 
-                            index='days_published', 
-                            values='Views', 
-                            aggfunc=['mean', 'median', 
-                                     lambda x: np.percentile(x, 80), 
-                                     lambda x: np.percentile(x, 20)]
-                           ).reset_index()
-views_days.columns = ['days_published','mean_views','median_views','80pct_views','20pct_views']
-views_days = views_days[views_days['days_published'].between(0,30)]
-views_cumulative = views_days.loc[:,['days_published','median_views','80pct_views','20pct_views']] 
-views_cumulative.loc[:,['median_views',
-                        '80pct_views',
-                        '20pct_views']] = views_cumulative.loc[:,['median_views','80pct_views','20pct_views']].cumsum()
+# views_days = pd.pivot_table(df_time_diff_yr, 
+#                             index='days_published', 
+#                             values='Views', 
+#                             aggfunc=['mean', 'median', 
+#                                      lambda x: np.percentile(x, 80), 
+#                                      lambda x: np.percentile(x, 20)]
+#                            ).reset_index()
+# views_days.columns = ['days_published','mean_views','median_views','80pct_views','20pct_views']
+# views_days = views_days[views_days['days_published'].between(0,30)]
+# views_cumulative = views_days.loc[:,['days_published','median_views','80pct_views','20pct_views']] 
+# views_cumulative.loc[:,['median_views',
+#                         '80pct_views',
+#                         '20pct_views']] = views_cumulative.loc[:,['median_views','80pct_views','20pct_views']].cumsum()
 
 
 ###############################################################################
@@ -186,43 +186,43 @@ if add_sidebar == 'Aggregate Metrics':
     for i in am_vid_numeric_lst:
         df_to_pct[i] = '{:.1%}'.format
     
-    st.dataframe(am_vid_diff_final.style.hide().applymap(style_negative, props='color:red;').applymap(style_positive, props='color:green;').format(df_to_pct))
+    st.dataframe(am_vid_diff_final.style.hide_index().applymap(style_negative, props='color:red;').applymap(style_positive, props='color:green;').format(df_to_pct))
     # st.dataframe(am_vid_diff_final.style.hide().applymap(style_negative).applymap(style_positive).format(df_to_pct))
     
-if add_sidebar == 'Individual Video Analysis':
-    videos = tuple(am_vid['Video title'])
-    st.write("Individual Video Performance")
-    video_select = st.selectbox('Pick a Video:', videos)
+# if add_sidebar == 'Individual Video Analysis':
+#     videos = tuple(am_vid['Video title'])
+#     st.write("Individual Video Performance")
+#     video_select = st.selectbox('Pick a Video:', videos)
     
-    agg_filtered = am_vid[am_vid['Video title'] == video_select]
-    agg_sub_filtered = am_ctsubs[am_ctsubs['Video Title'] == video_select]
-    agg_sub_filtered['Country'] = agg_sub_filtered['Country Code'].apply(audience_simple)
-    agg_sub_filtered.sort_values('Is Subscribed', inplace= True)   
+#     agg_filtered = am_vid[am_vid['Video title'] == video_select]
+#     agg_sub_filtered = am_ctsubs[am_ctsubs['Video Title'] == video_select]
+#     agg_sub_filtered['Country'] = agg_sub_filtered['Country Code'].apply(audience_simple)
+#     agg_sub_filtered.sort_values('Is Subscribed', inplace= True)   
     
-    fig = px.bar(agg_sub_filtered, x ='Views', y='Is Subscribed', color ='Country', orientation ='h')
-    #order axis 
-    st.plotly_chart(fig)
+#     fig = px.bar(agg_sub_filtered, x ='Views', y='Is Subscribed', color ='Country', orientation ='h')
+#     #order axis 
+#     st.plotly_chart(fig)
     
-    agg_time_filtered = vid_pot_diff[vid_pot_diff['Video Title'] == video_select]
-    first_30 = agg_time_filtered[agg_time_filtered['days_published'].between(0,30)]
-    first_30 = first_30.sort_values('days_published')
+#     agg_time_filtered = vid_pot_diff[vid_pot_diff['Video Title'] == video_select]
+#     first_30 = agg_time_filtered[agg_time_filtered['days_published'].between(0,30)]
+#     first_30 = first_30.sort_values('days_published')
     
-    fig2 = go.Figure()
-    fig2.add_trace(go.Scatter(x=views_cumulative['days_published'], y=views_cumulative['20pct_views'],
-                    mode='lines',
-                    name='20th percentile', line=dict(color='purple', dash ='dash')))
-    fig2.add_trace(go.Scatter(x=views_cumulative['days_published'], y=views_cumulative['median_views'],
-                        mode='lines',
-                        name='50th percentile', line=dict(color='black', dash ='dash')))
-    fig2.add_trace(go.Scatter(x=views_cumulative['days_published'], y=views_cumulative['80pct_views'],
-                        mode='lines', 
-                        name='80th percentile', line=dict(color='royalblue', dash ='dash')))
-    fig2.add_trace(go.Scatter(x=first_30['days_published'], y=first_30['Views'].cumsum(),
-                        mode='lines', 
-                        name='Current Video' ,line=dict(color='firebrick',width=8)))
+#     fig2 = go.Figure()
+#     fig2.add_trace(go.Scatter(x=views_cumulative['days_published'], y=views_cumulative['20pct_views'],
+#                     mode='lines',
+#                     name='20th percentile', line=dict(color='purple', dash ='dash')))
+#     fig2.add_trace(go.Scatter(x=views_cumulative['days_published'], y=views_cumulative['median_views'],
+#                         mode='lines',
+#                         name='50th percentile', line=dict(color='black', dash ='dash')))
+#     fig2.add_trace(go.Scatter(x=views_cumulative['days_published'], y=views_cumulative['80pct_views'],
+#                         mode='lines', 
+#                         name='80th percentile', line=dict(color='royalblue', dash ='dash')))
+#     fig2.add_trace(go.Scatter(x=first_30['days_published'], y=first_30['Views'].cumsum(),
+#                         mode='lines', 
+#                         name='Current Video' ,line=dict(color='firebrick',width=8)))
         
-    fig2.update_layout(title='View comparison first 30 days',
-                   xaxis_title='Days Since Published',
-                   yaxis_title='Cumulative views')
+#     fig2.update_layout(title='View comparison first 30 days',
+#                    xaxis_title='Days Since Published',
+#                    yaxis_title='Cumulative views')
     
-    st.plotly_chart(fig2)
+#     st.plotly_chart(fig2)
