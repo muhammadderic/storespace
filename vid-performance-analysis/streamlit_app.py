@@ -11,9 +11,6 @@ aggregated_metrics_by_video = 'Aggregated_Metrics_By_Video.csv'
 all_comments_final = 'All_Comments_Final.csv'
 video_performance_over_time = 'Video_Performance_Over_Time.csv'
 
-def load_data(file_path):
-  return pd.read_csv(file_path)
-
 #Define Functions 
 def style_negative(v, props=''):
     """ Style negative values in dataframe"""
@@ -38,10 +35,10 @@ def audience_simple(country):
     else:
         return 'Other'
     
-am_ctsubs = load_data(aggregated_metrics_by_country_and_subs)
-am_vid = load_data(aggregated_metrics_by_video)
-acom_f = load_data(all_comments_final)
-vid_pot = load_data(video_performance_over_time)
+am_ctsubs = pd.read_csv(aggregated_metrics_by_country_and_subs)
+am_vid = pd.read_csv(aggregated_metrics_by_video)
+acom_f = pd.read_csv(all_comments_final)
+vid_pot = pd.read_csv(video_performance_over_time)
 
 # ===== DATA PREPROCESSING =====
 # === Aggregated Metrics by Video Dataset ===
