@@ -2,4 +2,5 @@ BRANCHS:
 - Main
 
 COMMITS PLAN:
-Initial project, create helper functions and add data
+--Initial project, create helper functions and add data
+Create streamlit_app.py file, add web screenshot and generate requirements.txt
