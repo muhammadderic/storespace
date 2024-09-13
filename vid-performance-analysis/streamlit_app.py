@@ -36,11 +36,11 @@ def audience_simple(country):
         return 'India'
     else:
         return 'Other'
-
-am_ctsubs = load_data(f'data{aggregated_metrics_by_country_and_subs}')
-am_vid = load_data(f'data{aggregated_metrics_by_video}')
-acom_f = load_data(f'data{all_comments_final}')
-vid_pot = load_data(f'data{video_performance_over_time}')
+    
+am_ctsubs = load_data(f'./data{aggregated_metrics_by_country_and_subs}')
+am_vid = load_data(f'./data{aggregated_metrics_by_video}')
+acom_f = load_data(f'./data{all_comments_final}')
+vid_pot = load_data(f'./data{video_performance_over_time}')
 
 # ===== DATA PREPROCESSING =====
 # === Aggregated Metrics by Video Dataset ===
