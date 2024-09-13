@@ -6,12 +6,13 @@ import plotly.express as px
 import streamlit as st
 from datetime import datetime
 
-from utils import load_data
-
 aggregated_metrics_by_country_and_subs = '/Aggregated_Metrics_By_Country_And_Subscriber_Status.csv'
 aggregated_metrics_by_video = '/Aggregated_Metrics_By_Video.csv'
 all_comments_final = '/All_Comments_Final.csv'
 video_performance_over_time = '/Video_Performance_Over_Time.csv'
+
+def load_data(file_path):
+  return pd.read_csv(file_path)
 
 #Define Functions 
 def style_negative(v, props=''):
