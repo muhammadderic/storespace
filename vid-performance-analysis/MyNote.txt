@@ -1,0 +1,5 @@
+BRANCHS:
+- Main
+
+COMMITS PLAN:
+Initial project, create helper functions and add data
